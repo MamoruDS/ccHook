@@ -32,7 +32,7 @@ export type RequestInfo = {
         [key: string]: string
     }
     body: {
-        [key: string]: string
+        [key: string]: string | number | boolean | null
     }
 }
 
