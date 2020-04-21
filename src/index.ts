@@ -1,40 +1,41 @@
 import yargs = require('yargs')
 import { genRandom, genRandomNum } from './utils'
-import { getLatestPendingId } from './sto'
+import { getLatestPendingId, createUser } from './sto'
 
 const argv = yargs.options({
-    server: { type: 'boolean', default: true },
+    addUser: { type: 'string' },
+    server: { type: 'boolean' },
     password: { type: 'string', default: genRandom(6).toUpperCase() },
-    botToken: { type: 'string' },
-    chatId: { type: 'number' },
+    address: { type: 'string' },
     port: { type: 'number', default: 8030 },
 }).argv
 
 export const options = {} as {
     password: string
-    botToken: string
-    chatId: number | string
-    port: number | string
+    user: string
+    address: string
+    port: number
     pendingId: number
 }
 
 options.password = argv.password || process.env.CC_PASSWORD
-options.botToken = argv.botToken || process.env.CC_BOTTOKEN
-options.chatId = argv.chatId || process.env.CC_CHATID
-options.port = argv.port || process.env.CC_PORT
+options.address = argv.address || process.env.CC_SERVER_ADDR
+options.port = argv.port || parseInt(process.env.CC_PORT)
 
 import { server as _server } from './server'
-export { client } from './client'
+export { CCHookClient as Client } from './client'
 
 const main = () => {
     const latestId = getLatestPendingId()
     options.pendingId = latestId !== 0 ? latestId : genRandomNum(10000, 50000)
 
+    if (argv.addUser) {
+        const alias = argv.addUser
+        const id = createUser(alias)
+        console.log(`Added new user '${alias}' with ID:${id}`)
+    }
     if (argv.server) {
-        if (!options.chatId || !options.botToken) {
-        } else {
-            _server()
-        }
+        _server()
     }
 }
 
