@@ -52,7 +52,7 @@ interface CacheData {
     verify_token: string
 }
 
-type RequestInfo = {
+export type RequestInfo = {
     headers: {
         [key: string]: string
     }
@@ -142,7 +142,6 @@ export class CachedData {
             this._requestInfo = _data.request
             this._verifyKey = _data.verify_token
         } else {
-            console.log('init data with id: ', this._pendingId)
             this._requestInfo = reqInfo
             this._verifyKey = utils.genRandom(6).toUpperCase()
             setCacheData(this._user, this._pendingId, {
@@ -163,7 +162,7 @@ export class CachedData {
     }
     private get _cacheData(): CacheData {
         return {
-            verify_token: this._verifyKey,
+            // verify_token: this._verifyKey,
             request: this._requestInfo,
         } as CacheData
     }
