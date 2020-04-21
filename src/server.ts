@@ -1,10 +1,11 @@
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 
-import * as sto from './sto'
+import { getSTO, CachedData } from './sto'
 import { options as OPT } from './index'
 
 export const server = () => {
+    const sto = getSTO()
     const app = express()
 
     app.use(bodyParser.json())
@@ -29,7 +30,7 @@ export const server = () => {
             return
         }
         delete _body['_cc_hook_user_id']
-        const _data = new sto.CachedData(userId, undefined, {
+        const _data = new CachedData(userId, undefined, {
             body: _body,
             headers: _headers,
         })
@@ -45,14 +46,14 @@ export const server = () => {
             res.status(400).end()
             return
         }
-        const pendingIds = sto.getUserPending(userId)
+        const pendingIds = sto.user.get(userId).pending
         const data = []
         for (const id of pendingIds) {
             if (id <= offset) {
-                sto.removeCacheData(userId, id)
+                sto.user.get(userId).delCacheData(id)
                 continue
             }
-            const cachedData = new sto.CachedData(userId, id)
+            const cachedData = new CachedData(userId, id)
             data.push({
                 pending_id: cachedData.pendingId,
                 data: await cachedData.encrypt(),
@@ -69,7 +70,7 @@ export const server = () => {
             res.status(400).end()
             return
         }
-        const id = sto.createUser(alias)
+        const id = sto.user.add(alias)
         res.json({
             user_id: id,
         })
