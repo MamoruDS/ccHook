@@ -39,6 +39,8 @@ const client = new Client({
     port: 8030,
 })
 
+client.interval = 1000
+client.timeout = 5000
 client.start()
 
 client.on('request', (data) => {
