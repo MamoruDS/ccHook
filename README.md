@@ -2,15 +2,14 @@
 
 ## Usage
 
-```shell
-npm i cchook
-```
-
 ### server
 
 Build before use
 
 ```shell
+git clone https://github.com/MamoruDS/ccHook.git
+cd ccHook
+npm install
 npm run build
 ```
 
@@ -29,6 +28,10 @@ node dist/index.js --addUser='username'
 
 ### client
 
+```shell
+npm i cchook
+```
+Use in your project
 ```typescript
 const { Client } = require('cchook')
 
