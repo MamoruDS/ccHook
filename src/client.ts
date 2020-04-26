@@ -21,6 +21,7 @@ export class CCHookClient extends EventEmitter {
     private _tc: number
     private _ct: string
     private _nt: string
+    private _action: EventEmitter
 
     constructor(
         options: {
@@ -36,6 +37,7 @@ export class CCHookClient extends EventEmitter {
         this._addr = options.address || OPT.address
         this._port = options.port || OPT.port
         this._connERRCount = 0
+        this._action = new EventEmitter()
     }
 
     private get _server(): string {
@@ -58,6 +60,9 @@ export class CCHookClient extends EventEmitter {
     }
     set retryInterval(interval: number) {
         this._retryInterval = interval
+    }
+    get action(): EventEmitter {
+        return this._action
     }
 
     private async _getUpdates(token: string) {
@@ -142,6 +147,10 @@ export class CCHookClient extends EventEmitter {
                 request: RequestInfo
             }
             this.emit('request', cacheData)
+            const action = cacheData.request.body['_cc_hook_action_name']
+            if (typeof action == 'string') {
+                this._action.emit(action)
+            }
         } catch (err) {
             //
         }
