@@ -115,7 +115,7 @@ class User {
     }
 }
 
-class STO {
+export class STO {
     private _db
     private _users: Users
 

@@ -1,6 +1,6 @@
 import yargs = require('yargs')
-import { genRandom, genRandomNum } from './utils'
 import { getSTO } from './sto'
+export { router } from './server'
 
 const argv = yargs.options({
     addUser: { type: 'string' },
@@ -33,15 +33,6 @@ const main = () => {
         console.log(`Added new user '${alias}' with ID:${id}`)
     }
     if (argv.server) {
-        const sto = getSTO()
-        const latestId = sto.lastPendingId
-        options.pendingId =
-            latestId !== 0 ? latestId : genRandomNum(10000, 50000)
-        if (!options.password) {
-            const passwd = genRandom(8).toUpperCase()
-            options.password = passwd
-            console.log(`Generate new password: ${passwd}`)
-        }
         _server()
     }
 }

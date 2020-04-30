@@ -149,7 +149,7 @@ export class CCHookClient extends EventEmitter {
             this.emit('request', cacheData)
             const action = cacheData.request.body['_cc_hook_action_name']
             if (typeof action == 'string') {
-                this._action.emit(action)
+                this._action.emit(action, cacheData)
             }
         } catch (err) {
             //
