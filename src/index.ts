@@ -1,6 +1,4 @@
 import yargs = require('yargs')
-import { getSTO } from './sto'
-export { router } from './server'
 
 const argv = yargs.options({
     addUser: { type: 'string' },
@@ -38,3 +36,6 @@ const main = () => {
 }
 
 main()
+
+import { getSTO } from './sto'
+export { router } from './server'

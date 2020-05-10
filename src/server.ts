@@ -7,7 +7,7 @@ import { genRandom, genRandomNum } from './utils'
 
 export const router = express.Router()
 
-let sto = undefined as STO
+let _inited = false
 
 router.route('/').get((req, res) => {
     res.status(202).json({
@@ -32,7 +32,7 @@ router.route('/cchook').post(async (req, res) => {
             errMsg: 'missing user id in request',
         })
         return
-    } else if (sto.user.list.lastIndexOf(userId) == -1) {
+    } else if (sto().user.list.lastIndexOf(userId) == -1) {
         res.status(400).json({
             err: true,
             errMsg: 'user not found',
@@ -60,11 +60,11 @@ router.route('/pending').post(async (req, res) => {
         })
         return
     }
-    const pendingIds = sto.user.get(userId).pending
+    const pendingIds = sto().user.get(userId).pending
     const data = []
     for (const id of pendingIds) {
         if (id <= offset) {
-            sto.user.get(userId).delCacheData(id)
+            sto().user.get(userId).delCacheData(id)
             continue
         }
         const cachedData = new CachedData(userId, id)
@@ -87,7 +87,7 @@ router
             res.status(400).end()
             return
         }
-        const id = sto.user.add(alias)
+        const id = sto().user.add(alias)
         res.status(200).json({
             err: false,
             user_id: id,
@@ -95,19 +95,28 @@ router
     })
     .delete(async (req, res) => {})
 
-export const server = () => {
-    sto = getSTO()
-    const latestId = sto.lastPendingId
-    OPT.pendingId = (latestId !== 0 ? latestId : genRandomNum(10000, 50000)) + 1
-    if (!OPT.password) {
-        const passwd = genRandom(8).toUpperCase()
-        OPT.password = passwd
-        console.log(`Generate new password: ${passwd}`)
+const sto = (): STO => {
+    if (_inited) {
+        return getSTO()
+    } else {
+        const _sto = getSTO()
+        const latestId = _sto.lastPendingId
+        OPT.pendingId =
+            (latestId !== 0 ? latestId : genRandomNum(10000, 50000)) + 1
+        if (!OPT.password) {
+            const passwd = genRandom(8).toUpperCase()
+            OPT.password = passwd
+            console.log(`Generate new password: ${passwd}`)
+        }
+        _inited = true
+        return _sto
     }
+}
+
+export const server = () => {
     const app = express()
 
     app.use(bodyParser.json())
-
     app.use('/', router)
 
     app.listen(OPT.port, () => {
