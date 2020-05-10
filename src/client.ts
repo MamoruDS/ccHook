@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events'
 
-import axios from 'axios'
-
+import { axios, source } from './request'
 import { options as OPT } from './index'
 import { decrypt } from './encrypt'
 import { RequestInfo } from './sto'
@@ -70,7 +69,6 @@ export class CCHookClient extends EventEmitter {
             const now = Date.now() as number
             this._tc = now
             this._ct = token
-            const source = axios.CancelToken.source()
             setTimeout(() => {
                 if (this._ct == token) {
                     source.cancel()
